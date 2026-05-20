@@ -10,7 +10,8 @@ import {
   Settings,
   LogOut,
   Rocket,
-  Upload
+  Upload,
+  FlaskConical
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -31,6 +32,7 @@ export function Navigation({ currentView, onViewChange }: NavigationProps) {
     { id: 'files', icon: Upload, label: 'Files' },
     { id: 'marketplace', icon: ShoppingBag, label: 'Market' },
     { id: 'custom-llm', icon: Database, label: 'LLM' },
+    { id: 'sdg', icon: FlaskConical, label: 'DataForge' },
     { id: 'astrid', icon: Bot, label: 'Astrid' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];
@@ -66,8 +68,8 @@ export function Navigation({ currentView, onViewChange }: NavigationProps) {
             </Button>
           ))}
         </div>
-        <div className="grid grid-cols-3 gap-3 mt-3">
-          {navItems.slice(8, 10).map((item) => (
+        <div className="grid grid-cols-4 gap-3 mt-3">
+          {navItems.slice(8, 11).map((item) => (
             <Button
               key={item.id}
               variant={currentView === item.id ? "neon" : "ghost"}
