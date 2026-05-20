@@ -11,6 +11,7 @@ import ProjectDeployment from "@/components/ProjectDeployment";
 import FileUploadManager from "@/components/FileUploadManager";
 import { AIMarketplace } from "@/components/AIMarketplace";
 import { CustomLLMBuilder } from "@/components/CustomLLMBuilder";
+import { SyntheticDataGenerator } from "@/components/SyntheticDataGenerator";
 import { Astrid } from "@/components/Astrid";
 import { Settings } from "@/components/Settings";
 import { Navigation } from "@/components/Navigation";
@@ -51,6 +52,8 @@ const Index = () => {
         return <AIMarketplace />;
       case 'custom-llm':
         return <CustomLLMBuilder />;
+      case 'sdg':
+        return <SyntheticDataGenerator onViewChange={setCurrentView} />;
       case 'astrid':
         return <Astrid />;
       case 'settings':
