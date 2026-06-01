@@ -12,6 +12,7 @@ import FileUploadManager from "@/components/FileUploadManager";
 import { AIMarketplace } from "@/components/AIMarketplace";
 import { CustomLLMBuilder } from "@/components/CustomLLMBuilder";
 import { SyntheticDataGenerator } from "@/components/SyntheticDataGenerator";
+import SkillsLibraryTab from "@/components/SkillsLibraryTab";
 import { Astrid } from "@/components/Astrid";
 import { Settings } from "@/components/Settings";
 import { Navigation } from "@/components/Navigation";
@@ -24,10 +25,10 @@ const Index = () => {
   const [showLoading, setShowLoading] = useState(false);
   const [showSplash, setShowSplash] = useState(false);
   const [currentView, setCurrentView] = useState('dashboard');
+  const [astridInput, setAstridInput] = useState('');
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect to auth if not logged in and we're past the landing page
   useEffect(() => {
     if (!loading && !user && !showLanding) {
       navigate('/auth');
@@ -54,8 +55,13 @@ const Index = () => {
         return <CustomLLMBuilder />;
       case 'sdg':
         return <SyntheticDataGenerator onViewChange={setCurrentView} />;
+      case 'skills':
+        return <SkillsLibraryTab onActivateSkill={(name, prompt) => {
+          setAstridInput(`${name}: ${prompt}`);
+          setCurrentView('astrid');
+        }} />;
       case 'astrid':
-        return <Astrid />;
+        return <Astrid initialInput={astridInput} onInputChange={setAstridInput} />;
       case 'settings':
         return <Settings />;
       default:
@@ -63,17 +69,14 @@ const Index = () => {
     }
   };
 
-  // Landing page flow - show to everyone first
   if (showLanding) {
     return (
       <LandingPage 
         onEnter={() => {
           setShowLanding(false);
-          // If not authenticated, go to auth page
           if (!user && !loading) {
             navigate('/auth');
           } else if (user) {
-            // If already authenticated, go to loading screen
             setShowLoading(true);
           }
         }} 
@@ -81,7 +84,6 @@ const Index = () => {
     );
   }
 
-  // Show loading spinner while checking auth (after landing page dismissed)
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -90,7 +92,6 @@ const Index = () => {
     );
   }
 
-  // Don't render anything if user is not logged in (will redirect to auth)
   if (!user) {
     navigate('/auth');
     return null;
