@@ -14,6 +14,7 @@ import { CustomLLMBuilder } from "@/components/CustomLLMBuilder";
 import { SyntheticDataGenerator } from "@/components/SyntheticDataGenerator";
 import SkillsLibraryTab from "@/components/SkillsLibraryTab";
 import { Astrid } from "@/components/Astrid";
+import { AstridForge } from "@/components/AstridForge";
 import { Settings } from "@/components/Settings";
 import { Navigation } from "@/components/Navigation";
 import { AIInitializer } from "@/components/AIInitializer";
@@ -62,6 +63,8 @@ const Index = () => {
         }} />;
       case 'astrid':
         return <Astrid initialInput={astridInput} onInputChange={setAstridInput} />;
+      case 'forge':
+        return <AstridForge />;
       case 'settings':
         return <Settings />;
       default:

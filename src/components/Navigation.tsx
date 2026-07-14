@@ -11,7 +11,8 @@ import {
   LogOut,
   Rocket,
   Upload,
-  FlaskConical
+  FlaskConical,
+  Sparkles
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -34,6 +35,7 @@ export function Navigation({ currentView, onViewChange }: NavigationProps) {
     { id: 'custom-llm', icon: Database, label: 'LLM' },
     { id: 'sdg', icon: FlaskConical, label: 'DataForge' },
     { id: 'astrid', icon: Bot, label: 'Astrid' },
+    { id: 'forge', icon: Sparkles, label: 'Forge' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];
 
@@ -69,7 +71,7 @@ export function Navigation({ currentView, onViewChange }: NavigationProps) {
           ))}
         </div>
         <div className="grid grid-cols-4 gap-3 mt-3">
-          {navItems.slice(8, 11).map((item) => (
+          {navItems.slice(8, 12).map((item) => (
             <Button
               key={item.id}
               variant={currentView === item.id ? "neon" : "ghost"}
