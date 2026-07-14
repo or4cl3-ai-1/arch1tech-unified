@@ -1,4 +1,9 @@
-// Groq API-powered AI Service
+// LLM-powered AI Service.
+// Backed by Groq today; both Groq and Google's Gemma 4 API speak the same
+// OpenAI-compatible chat-completions shape, so swapping LLM_API_URL / LLM_MODEL
+// (and the Authorization scheme) is the only change needed to move to a
+// fine-tuned Gemma 4 endpoint later — see forge-service.ts for the structured
+// JSON generation path this unlocks.
 import { getGroqApiKey as readGroqApiKey, setGroqApiKey as writeGroqApiKey } from '@/lib/groq-key-storage';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
@@ -105,6 +110,50 @@ class AIService {
       { role: 'system', content: systemMsg },
       { role: 'user', content: `Generate code for: ${description}` },
     ]);
+  }
+
+  /**
+   * Structured JSON generation — used by forge-service.ts for anything that
+   * needs a parseable object back (ethical dilemmas, simulation reports,
+   * agent configs) instead of free text. Groq's OpenAI-compatible endpoint
+   * supports response_format: json_object on llama-3.3-70b-versatile.
+   */
+  async chatJSON<T>(messages: ChatMessage[], systemPrompt?: string): Promise<T> {
+    const key = this.getGroqApiKey();
+    if (!key) {
+      throw new Error('No Groq API key configured. Add one in Settings to enable AI generation.');
+    }
+
+    const fullMessages: ChatMessage[] = [
+      ...(systemPrompt ? [{ role: 'system' as const, content: systemPrompt }] : []),
+      ...messages,
+    ];
+
+    const response = await fetch(GROQ_API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: fullMessages,
+        response_format: { type: 'json_object' },
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Groq API error ${response.status}: ${errText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content ?? '{}';
+    try {
+      return JSON.parse(content) as T;
+    } catch {
+      throw new Error('Model returned malformed JSON — try again.');
+    }
   }
 
   async *chat(messages: ChatMessage[], systemPrompt?: string): AsyncGenerator<string> {

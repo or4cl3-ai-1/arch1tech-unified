@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EthicalSimulator } from "@/components/EthicalSimulator";
 import { 
   Rocket, 
   Brain, 
@@ -17,6 +19,11 @@ interface DashboardProps {
 }
 
 export function Dashboard({ onViewChange }: DashboardProps) {
+  // Real, live-updating Σ-Matrix drift — replaces the previous hardcoded "0.02".
+  // Starts stable; each completed Ethical Simulator decision nudges it via
+  // EthicalSimulator's onDriftChange, using real AI-scored driftImpact.
+  const [sigmaDrift, setSigmaDrift] = useState(0.02);
+
   return (
     <div className="min-h-screen mobile-p-4 tablet-p-6 desktop-p-8 space-y-6 pb-32 mobile-safe-area">
       {/* Header */}
@@ -60,8 +67,8 @@ export function Dashboard({ onViewChange }: DashboardProps) {
               <TrendingUp className="w-5 h-5 text-neon-purple" />
               <span className="text-sm text-muted-foreground">Σ-Matrix Drift</span>
             </div>
-            <div className="text-2xl font-bold text-neon-purple">0.02</div>
-            <div className="text-xs text-neon-green">Excellent stability</div>
+            <div className="text-2xl font-bold text-neon-purple">{sigmaDrift.toFixed(2)}</div>
+            <div className="text-xs text-neon-green">{sigmaDrift < 0.1 ? "Excellent stability" : sigmaDrift < 0.3 ? "Stable" : "Needs review"}</div>
           </div>
         </div>
 
@@ -147,6 +154,9 @@ export function Dashboard({ onViewChange }: DashboardProps) {
           <span className="text-sm sm:text-base">Σ-Matrix</span>
         </Button>
       </div>
+
+      {/* Ethical Simulator — real AI-generated dilemma + live Σ-Matrix drift */}
+      <EthicalSimulator drift={sigmaDrift} onDriftChange={setSigmaDrift} />
     </div>
   );
 }
